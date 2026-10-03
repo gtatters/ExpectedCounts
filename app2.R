@@ -105,19 +105,19 @@ draw_mosaic <- function(tab, main, dots = FALSE, digits = 0,
   xl   <- c(0, wcol[1] + gap)
   xr   <- c(wcol[1], 1 + gap)
   p_inf <- ifelse(ctot > 0, tab[1, ] / ctot, 0)
-  
+
   op <- par(mar = c(4.5, 8.5, 3, 1))
   on.exit(par(op))
   plot(NA, xlim = c(0, 1 + gap), ylim = c(0, 1), axes = FALSE,
        xlab = "", ylab = "", xaxs = "i", yaxs = "i")
   title(main = main, cex.main = 1.3, font.main = 2, line = 1.6)
-  
+
   fmt <- function(v) formatC(v, format = "f", digits = digits)
   fmt_tot <- function(v) {
     if (abs(v - round(v)) < 1e-9) formatC(v, format = "d")
     else formatC(v, format = "f", digits = 1)
   }
-  
+
   for (j in 1:2) {
     if (wcol[j] <= 0) next
     split <- 1 - p_inf[j]
@@ -139,7 +139,7 @@ draw_mosaic <- function(tab, main, dots = FALSE, digits = 0,
     mtext(paste0(col_lab[j], "\n(", fmt_tot(ctot[j]), " frogs)"),
           side = 1, at = xm, line = 2.2, cex = 1.1, font = 2)
   }
-  
+
   # row labels on the left, lined up with the first non-empty column
   jref  <- if (wcol[1] > 0) 1 else 2
   split <- 1 - p_inf[jref]
@@ -147,14 +147,14 @@ draw_mosaic <- function(tab, main, dots = FALSE, digits = 0,
         line = 0.5, col = col_inf, font = 2, cex = 1.1)
   mtext("Not\ninfected", side = 2, at = split / 2, las = 1,
         line = 0.5, col = col_un, font = 2, cex = 1.1)
-  
+
   if (indep_line) {
     y_ind <- 1 - sum(tab[1, ]) / N
     abline(h = y_ind, lty = 2, lwd = 2.5, col = blue)
     mtext("Dashed line = where 'no link' would split the frogs",
           side = 3, line = 0.2, cex = 0.95, col = blue)
   }
-  
+
   if (quarters) {
     abline(v = (1 + gap) / 2, lty = 3, lwd = 3, col = "gray30")
     abline(h = 0.5,           lty = 3, lwd = 3, col = "gray30")
@@ -171,7 +171,7 @@ draw_tree <- function(N, pF, pI) {
   plot(NA, xlim = c(0, 1), ylim = c(0, 1), axes = FALSE, xlab = "", ylab = "")
   title(main = "Splitting the frogs, one trait at a time",
         cex.main = 1.3, font.main = 2)
-  
+
   nF  <- N * pF
   nM  <- N * (1 - pF)
   fmt <- function(v) {
@@ -179,11 +179,11 @@ draw_tree <- function(N, pF, pI) {
     else formatC(v, format = "f", digits = 1)
   }
   fmt_p <- function(v) formatC(v, format = "f", digits = 2)
-  
+
   x0 <- 0.10; x1 <- 0.42; x2 <- 0.80
   yF <- 0.73; yM <- 0.27
   leaves_y <- c(0.89, 0.60, 0.40, 0.11)
-  
+
   # branch label on a white backing so it never sits on top of a line
   blab <- function(x, y, lab, col) {
     w <- strwidth(lab,  cex = 1.0, font = 2) * 1.15
@@ -191,12 +191,12 @@ draw_tree <- function(N, pF, pI) {
     rect(x - w / 2, y - h / 2, x + w / 2, y + h / 2, col = "white", border = NA)
     text(x, y, lab, col = col, cex = 1.0, font = 2)
   }
-  
+
   # branches: root to habitat (labels sit on the middle of each branch)
   segments(x0 + 0.08, 0.5, x1 - 0.08, c(yF, yM), lwd = 2, col = "gray40")
   blab((x0 + x1) / 2, (0.5 + yF) / 2, paste0("\u00d7 ", fmt_p(pF)),     "gray20")
   blab((x0 + x1) / 2, (0.5 + yM) / 2, paste0("\u00d7 ", fmt_p(1 - pF)), "gray20")
-  
+
   # branches: habitat to infection status
   leaf_left <- x2 + 0.06 - 0.12
   segments(x1 + 0.08, yF, leaf_left, leaves_y[1:2], lwd = 2, col = "gray40")
@@ -206,7 +206,7 @@ draw_tree <- function(N, pF, pI) {
   blab(bx, (yF + leaves_y[2]) / 2, paste0("\u00d7 ", fmt_p(1 - pI)), col_un)
   blab(bx, (yM + leaves_y[3]) / 2, paste0("\u00d7 ", fmt_p(pI)),     col_inf)
   blab(bx, (yM + leaves_y[4]) / 2, paste0("\u00d7 ", fmt_p(1 - pI)), col_un)
-  
+
   # nodes
   node <- function(x, y, lab, col, bg = "white") {
     w <- 0.15; h <- 0.10
@@ -217,7 +217,7 @@ draw_tree <- function(N, pF, pI) {
   node(x0, 0.5, paste0("All frogs\n", N), "gray20")
   node(x1, yF, paste0("Forest\n", fmt(nF)), "gray20")
   node(x1, yM, paste0("Meadow\n", fmt(nM)), "gray20")
-  
+
   leaf_lab <- c(paste0("Infected, forest\n", fmt(nF * pI)),
                 paste0("Not inf., forest\n", fmt(nF * (1 - pI))),
                 paste0("Infected, meadow\n", fmt(nM * pI)),
@@ -244,20 +244,20 @@ html_ct <- function(tab, caption, digits = 0, working = NULL,
     if (all(abs(v - round(v)) < 1e-9)) formatC(v, format = "d", big.mark = "")
     else formatC(v, format = "f", digits = 1)
   }
-  td  <- "padding:5px 6px; border:1px solid #d0d7de; text-align:center;"
+  td  <- "padding:6px 10px; border:1px solid #d0d7de; text-align:center;"
   th  <- paste0(td, " background-color:#f6f8fa;")
   rc  <- c(col_inf, col_un)
-  
+
   cell <- function(i, j) {
     val <- paste0("<span style='font-size:18px; font-weight:700; color:", rc[i], ";'>",
                   fmt(tab[i, j]), "</span>")
     if (!is.null(working)) {
-      val <- paste0(val, "<br><span style='font-size:12px; color:#555; white-space:nowrap;'>",
+      val <- paste0(val, "<br><span style='font-size:12px; color:#555;'>",
                     working[i, j], "</span>")
     }
     paste0("<td style='", td, "'>", val, "</td>")
   }
-  
+
   rows <- character(2)
   for (i in 1:2) {
     rows[i] <- paste0(
@@ -265,22 +265,21 @@ html_ct <- function(tab, caption, digits = 0, working = NULL,
       cell(i, 1), cell(i, 2),
       "<td style='", td, " color:#555;'>", fmt_m(margins$R[i]), "</td></tr>")
   }
-  
+
   paste0(
     "<div style='margin-bottom:6px; font-weight:700; font-size:16px; color:", accent, ";'>",
     caption, "</div>",
-    "<div style='overflow-x:auto;'>",
     "<table style='border-collapse:collapse; width:100%; font-size:15px;'>",
     "<tr><th style='", th, "'></th>",
     "<th style='", th, "'>", col_lab[1], "</th>",
     "<th style='", th, "'>", col_lab[2], "</th>",
-    "<th style='", th, " color:#555;'>Total</th></tr>",
+    "<th style='", th, " color:#555;'>Row total</th></tr>",
     rows[1], rows[2],
-    "<tr><th style='", th, " color:#555; text-align:left;'>Total</th>",
+    "<tr><th style='", th, " color:#555; text-align:left;'>Column total</th>",
     "<td style='", td, " color:#555;'>", fmt_m(margins$C[1]), "</td>",
     "<td style='", td, " color:#555;'>", fmt_m(margins$C[2]), "</td>",
     "<td style='", td, " color:#555; font-weight:700;'>", fmt_m(margins$N), "</td></tr>",
-    "</table></div>")
+    "</table>")
 }
 
 # ---- shared process controls (tabs 2 and 3 use the same layout) ------------
@@ -313,92 +312,17 @@ process_controls <- function(id) {
 ui <- fluidPage(
   titlePanel("Expected Counts in Contingency Tables",
              windowTitle = "Expected Counts"),
-  
+
   tags$head(tags$style(HTML(
     ".action-button { color:#fff; background-color:#569BBD; border:none; }
      .action-button:hover { color:#fff; background-color:#3E7C99; }
      .action-button:active { transform:scale(0.97); }
      .verdict p { font-size:16px; line-height:1.6; }"
   ))),
-  
+
   tabsetPanel(
     type = "tabs",
-    
-    # ======= OVERVIEW ========================================================
-    tabPanel(
-      "Overview",
-      br(),
-      fluidRow(
-        column(
-          width = 8,
-          h2("Why aren't expected counts just N / Num Categories?",
-             style = paste0("color:", teal, "; font-weight:700;")),
-          p(style = "font-size:17px; line-height:1.6;",
-            "When we test whether two traits are linked (for example, with a ",
-            "chi-square test), we compare what we ", strong("observed"),
-            " with what we would ", strong("expect"), " if there were no link at all. ",
-            "It is tempting to think the expected count in each box of the table is ",
-            "simply the total divided by the number of boxes. This app shows why that ",
-            "only works in one special case, and where the correct expected counts ",
-            "actually come from."),
-          p(style = "font-size:17px; line-height:1.6;",
-            "The short answer: a box can only fill up with individuals that belong to ",
-            "that row ", em("and"), " that column. If one group is much bigger than ",
-            "another, its boxes should hold more individuals, even when nothing ",
-            "interesting is going on."),
-          br(),
-          h4(style = paste0("color:", teal, ";"), "The example"),
-          p(style = "font-size:16px; line-height:1.6;",
-            "A researcher swabs frogs from ", strong("forest"), " ponds and ",
-            strong("meadow"), " ponds and records whether each frog is ",
-            span(style = paste0("color:", col_inf, "; font-weight:700;"), "infected"),
-            " or ",
-            span(style = paste0("color:", col_un, "; font-weight:700;"), "not infected"),
-            " with a skin fungus. The question is whether infection is linked to habitat. ",
-            em("(Hypothetical example - all data are simulated.)")),
-          br(),
-          h4(style = paste0("color:", teal, ";"), "What each tab shows"),
-          tags$ol(
-            style = "font-size:16px; line-height:1.9;",
-            tags$li(strong("Where expected counts come from:"),
-                    " split the frogs one trait at a time and see that each expected ",
-                    "count is N \u00d7 P(row) \u00d7 P(column). Compare it with the N / 4 guess."),
-            tags$li(strong("One sample:"),
-                    " catch a random sample of frogs, then compare the observed table ",
-                    "with the expected table built from its row and column totals."),
-            tags$li(strong("Many samples:"),
-                    " repeat the study hundreds of times to see which expected counts ",
-                    "are right in the long run, and how often each version of the ",
-                    "chi-square test raises a false alarm.")
-          ),
-          br(),
-          p(style = "font-size:15px; color:#555;",
-            em("Move the sliders, press ", strong("Resample"), " to draw new frogs, ",
-               "and watch how the expected counts follow the sizes of the groups, ",
-               "not the number of boxes."))
-        ),
-        column(
-          width = 4,
-          br(),
-          wellPanel(
-            p(strong("The key formula")),
-            formula_box(
-              p("Expected count = N \u00d7 P(row) \u00d7 P(column)"),
-              p(strong("= Row total \u00d7 Column total / N"))
-            ),
-            p("Both lines give the same answer. Tab 1 shows every step of the algebra."),
-            hr(),
-            p(strong("Companion app")),
-            p("Probability: Concepts and Rules - see the ",
-              em("Multiplication Rule"), " tab for P(A and B) = P(A) \u00d7 P(B)."),
-            hr(),
-            helpText("Glenn Tattersall, PhD"),
-            helpText("For use in BIOL 3P96 - Biostatistics")
-          )
-        )
-      )
-    ),
-    
+
     # ======= 1. WHERE EXPECTED COUNTS COME FROM ==============================
     tabPanel(
       "1. Where expected counts come from",
@@ -425,7 +349,10 @@ ui <- fluidPage(
                         value = 30, min = 5, max = 95, step = 5),
             checkboxInput("t1_quarters",
                           "Show the 'equal split' guess (N / 4) as dotted lines",
-                          value = FALSE)
+                          value = FALSE),
+            hr(),
+            helpText("Glenn Tattersall, PhD"),
+            helpText("For use in BIOL 3P96 - Biostatistics")
           )
         ),
         column(
@@ -456,7 +383,7 @@ ui <- fluidPage(
         )
       )
     ),
-    
+
     # ======= 2. ONE SAMPLE ===================================================
     tabPanel(
       "2. One sample",
@@ -488,15 +415,15 @@ ui <- fluidPage(
             column(6, plotOutput("t2_exp", height = "380px"))
           ),
           fluidRow(
-            column(6, wellPanel(htmlOutput("t2_tab_obs"))),
-            column(6, wellPanel(htmlOutput("t2_tab_exp"),
-                                htmlOutput("t2_tab_naive")))
+            column(4, wellPanel(htmlOutput("t2_tab_obs"))),
+            column(4, wellPanel(htmlOutput("t2_tab_exp"))),
+            column(4, wellPanel(htmlOutput("t2_tab_naive")))
           ),
           wellPanel(class = "verdict", div(uiOutput("t2_verdict"), align = "justify"))
         )
       )
     ),
-    
+
     # ======= 3. MANY SAMPLES =================================================
     tabPanel(
       "3. Many samples",
@@ -536,7 +463,7 @@ ui <- fluidPage(
 
 # ================================ SERVER =====================================
 server <- function(input, output, session) {
-  
+
   # ---------------- shared: read the true process for a tab -----------------
   get_process <- function(id) {
     type <- input[[paste0(id, "_proc")]]
@@ -550,7 +477,7 @@ server <- function(input, output, session) {
     }
     list(type = type, N = input[[paste0(id, "_n")]], pF = pF, piF = piF, piM = piM)
   }
-  
+
   # ======================= TAB 1 ============================================
   t1 <- reactive({
     N  <- input$t1_n
@@ -560,18 +487,18 @@ server <- function(input, output, session) {
     dimnames(E) <- list(row_lab, col_lab)
     list(N = N, pF = pF, pI = pI, E = E)
   })
-  
+
   output$t1_tree <- renderPlot({
     d <- t1()
     draw_tree(d$N, d$pF, d$pI)
   })
-  
+
   output$t1_mosaic <- renderPlot({
     d <- t1()
     draw_mosaic(d$E, "Expected counts (no link)", digits = 1,
                 quarters = input$t1_quarters)
   })
-  
+
   output$t1_table <- renderUI({
     d <- t1()
     pr <- c(d$pI, 1 - d$pI)
@@ -584,7 +511,7 @@ server <- function(input, output, session) {
     HTML(html_ct(d$E, "Expected counts = N \u00d7 P(row) \u00d7 P(column)",
                  digits = 1, working = w, accent = blue))
   })
-  
+
   output$t1_naive <- renderUI({
     d <- t1()
     naive <- matrix(d$N / 4, 2, 2, dimnames = list(row_lab, col_lab))
@@ -592,7 +519,7 @@ server <- function(input, output, session) {
     HTML(html_ct(naive, "The 'equal split' guess = N / 4",
                  digits = 1, working = w, accent = "gray40"))
   })
-  
+
   output$t1_verdict <- renderUI({
     d   <- t1()
     N   <- d$N
@@ -605,7 +532,7 @@ server <- function(input, output, session) {
       else formatC(v, format = "f", digits = 1)
     }
     pct <- function(v) paste0(round(100 * v), "%")
-    
+
     s1 <- paste0("Out of ", N, " frogs, ", pct(d$pF), " come from forest ponds (",
                  f1(nF), " frogs) and ", pct(1 - d$pF), " from meadow ponds (",
                  f1(nM), " frogs).")
@@ -615,7 +542,7 @@ server <- function(input, output, session) {
                  ") and ", pct(d$pI), " of the meadow frogs should be infected (",
                  f1(nM), " \u00d7 ", formatC(d$pI, format = "f", digits = 2),
                  " = ", f1(eIM), ").")
-    
+
     if (abs(d$pF - 0.5) < 1e-9 && abs(d$pI - 0.5) < 1e-9) {
       s3 <- paste0("Here both splits are exactly 50:50, so every box expects ",
                    f1(N / 4), " frogs and the equal-split guess happens to be right. ",
@@ -625,8 +552,8 @@ server <- function(input, output, session) {
       s3 <- paste0("The equal-split guess would put ", f1(N / 4),
                    " frogs in every box. That ignores the fact that ",
                    if (d$pF != 0.5) paste0("there are ",
-                                           if (d$pF > 0.5) "more forest frogs than meadow frogs"
-                                           else "more meadow frogs than forest frogs") else "",
+                     if (d$pF > 0.5) "more forest frogs than meadow frogs"
+                     else "more meadow frogs than forest frogs") else "",
                    if (d$pF != 0.5 && d$pI != 0.5) " and that " else "",
                    if (d$pI != 0.5) paste0(
                      if (d$pI < 0.5) "most frogs are not infected"
@@ -634,14 +561,14 @@ server <- function(input, output, session) {
                    ". A box can only fill up with frogs that exist in that row ",
                    strong("and"), " that column.")
     }
-    
+
     s4 <- paste0("Notice in the right-hand plot that the line between infected and ",
                  "not infected sits at the ", strong("same height"), " in both habitats. ",
                  "That flat line is what 'no link' looks like: the infection rate does not ",
                  "change when you switch habitat.")
     tagList(p(HTML(s1)), p(HTML(s2)), p(HTML(s3)), p(HTML(s4)))
   })
-  
+
   # ======================= TAB 2 ============================================
   t2 <- reactive({
     input$t2_new
@@ -659,24 +586,24 @@ server <- function(input, output, session) {
     list(type = pr$type, pr = pr, O = O, E = E, naive = naive, N = N,
          X2_E = chisq_stat(O, E), X2_naive = chisq_stat(O, naive))
   })
-  
+
   output$t2_obs <- renderPlot({
     d <- t2()
     draw_mosaic(d$O, "What we caught (observed)", dots = TRUE,
                 indep_line = TRUE)
   })
-  
+
   output$t2_exp <- renderPlot({
     d <- t2()
     draw_mosaic(d$E, "Expected if no link (R \u00d7 C / N)", digits = 1,
                 quarters = input$t2_quarters)
   })
-  
+
   output$t2_tab_obs <- renderUI({
     d <- t2()
     HTML(html_ct(d$O, "Observed (O)", digits = 0, accent = "gray20"))
   })
-  
+
   output$t2_tab_exp <- renderUI({
     d <- t2()
     R <- rowSums(d$O); C <- colSums(d$O)
@@ -687,15 +614,13 @@ server <- function(input, output, session) {
     HTML(html_ct(d$E, "Expected (E) = R \u00d7 C / N", digits = 1,
                  working = w, margins = list(R = R, C = C, N = d$N), accent = blue))
   })
-  
+
   output$t2_tab_naive <- renderUI({
     d <- t2()
-    p(style = "margin-top:10px; margin-bottom:0; font-size:15px; color:#555;",
-      strong("Equal-split guess: "), "N / 4 = ", d$N, " / 4 = ",
-      strong(formatC(d$N / 4, format = "f", digits = 1)),
-      " in every box, whatever the totals.")
+    HTML(html_ct(d$naive, "Equal-split guess = N / 4", digits = 1,
+                 accent = "gray40"))
   })
-  
+
   output$t2_verdict <- renderUI({
     d  <- t2()
     O  <- d$O; E <- d$E; N <- d$N
@@ -703,15 +628,15 @@ server <- function(input, output, session) {
     f1 <- function(v) formatC(v, format = "f", digits = 1)
     f2 <- function(v) formatC(v, format = "f", digits = 2)
     pct <- function(v) paste0(round(100 * v), "%")
-    
+
     if (any(R == 0) || any(C == 0)) {
       return(p("One row or column of this sample is empty, so expected counts cannot ",
                "be split between the two habitats. Press Resample or increase N."))
     }
-    
+
     rate_F <- O[1, 1] / C[1]
     rate_M <- O[1, 2] / C[2]
-    
+
     s1 <- paste0("We caught ", C[1], " forest frogs and ", C[2], " meadow frogs. In total ",
                  R[1], " of ", N, " frogs (", pct(R[1] / N), ") were infected.")
     s2 <- paste0("If infection had nothing to do with habitat, ", pct(R[1] / N),
@@ -723,7 +648,7 @@ server <- function(input, output, session) {
                  "the observed table. It does not invent new frogs - it only asks how ",
                  "those same frogs would be shared out among the four boxes if there ",
                  "were no link.")
-    
+
     if (d$type == "indep") {
       s4 <- paste0("In this simulation there truly is ", strong("no link"), " (both habitats ",
                    "have a ", pct(d$pr$piF), " infection rate), so the observed counts sit ",
@@ -735,7 +660,7 @@ server <- function(input, output, session) {
                    "so the observed split lines are staggered and sit away from the dashed ",
                    "'no link' line.")
     }
-    
+
     s5 <- paste0("The chi-square statistic adds up (O \u2212 E)\u00b2 / E over the four boxes. ",
                  "Using the correct expected counts gives \u03c7\u00b2 = ", f2(d$X2_E),
                  ". Using the equal-split guess instead gives \u03c7\u00b2 = ", f2(d$X2_naive),
@@ -745,7 +670,7 @@ server <- function(input, output, session) {
                  else ".")
     tagList(p(HTML(s1)), p(HTML(s2)), p(HTML(s3)), p(HTML(s4)), p(HTML(s5)))
   })
-  
+
   # ======================= TAB 3 ============================================
   t3 <- reactive({
     input$t3_new
@@ -760,23 +685,23 @@ server <- function(input, output, session) {
     c_ <- nF - a                          # not infected, forest
     d_ <- nM - b                          # not infected, meadow
     R1 <- a + b; R2 <- c_ + d_
-    
+
     E11 <- R1 * nF / N; E12 <- R1 * nM / N
     E21 <- R2 * nF / N; E22 <- R2 * nM / N
     X2  <- (a - E11)^2 / E11 + (b - E12)^2 / E12 +
-      (c_ - E21)^2 / E21 + (d_ - E22)^2 / E22
+           (c_ - E21)^2 / E21 + (d_ - E22)^2 / E22
     ok  <- is.finite(X2)
     p_correct <- pchisq(X2[ok], df = 1, lower.tail = FALSE)
-    
+
     q  <- N / 4
     X2n <- ((a - q)^2 + (b - q)^2 + (c_ - q)^2 + (d_ - q)^2) / q
     p_naive <- pchisq(X2n, df = 3, lower.tail = FALSE)
-    
+
     list(type = pr$type, pr = pr, S = S, N = N, a = a, E11 = E11,
          sig_correct = mean(p_correct < 0.05), sig_naive = mean(p_naive < 0.05),
          n_ok = sum(ok))
   })
-  
+
   output$t3_hist <- renderPlot({
     d <- t3()
     par(mar = c(5, 5, 3, 1))
@@ -803,7 +728,7 @@ server <- function(input, output, session) {
                       paste0("N / 4 guess: ", formatC(d$N / 4, format = "f", digits = 1))),
            col = c(col_inf, blue, "gray30"), lty = c(1, 2, 3), lwd = 3)
   })
-  
+
   output$t3_bars <- renderPlot({
     d <- t3()
     par(mar = c(5, 5, 3, 1))
@@ -821,17 +746,17 @@ server <- function(input, output, session) {
     }
     box(bty = "l")
   })
-  
+
   output$t3_verdict <- renderUI({
     d   <- t3()
     f1  <- function(v) formatC(v, format = "f", digits = 1)
     pct <- function(v) paste0(round(100 * v, 1), "%")
     m_obs <- mean(d$a)
     m_exp <- mean(d$E11, na.rm = TRUE)
-    
+
     s1 <- paste0("Across ", d$S, " repeated studies of ", d$N, " frogs, the number of ",
                  "infected forest frogs averaged ", f1(m_obs), ".")
-    
+
     if (d$type == "indep") {
       s2 <- paste0("Because there is truly no link here, the observed average matches the ",
                    "R \u00d7 C / N expected count (", f1(m_exp), "). The equal-split guess (",
